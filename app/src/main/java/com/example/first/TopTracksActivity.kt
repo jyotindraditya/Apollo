@@ -31,6 +31,14 @@ class TopTracksActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         tracksRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        tracksRecyclerView.addItemDecoration(
+            androidx.recyclerview.widget.DividerItemDecoration(
+                this,
+                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+            )
+        )
+
+
         // Get the access token passed from MainActivity
         val accessToken = intent.getStringExtra("SPOTIFY_ACCESS_TOKEN")
 
