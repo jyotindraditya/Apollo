@@ -1,10 +1,17 @@
-plugins {alias(libs.plugins.android.application)
+import java.util.Properties
+plugins {
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("kapt")
 }
 
 android {
     namespace = "com.example.first"
     compileSdk = 36
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.first"
@@ -15,14 +22,27 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // This block is still required for the Spotify login to work correctly.
+        // Load from local.properties
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+
+        val geminiApiKey = properties.getProperty("GEMINI_API_KEY") ?: ""
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"$geminiApiKey\""
+        )
+
         manifestPlaceholders += mapOf(
             "redirectSchemeName" to "yourapp",
             "redirectHostName" to "callback",
             "redirectPathPattern" to "/.*"
         )
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -42,30 +62,25 @@ android {
 }
 
 dependencies {
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.auth)
+    implementation(libs.auth) // This is your com.spotify.android:auth dependency
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.androidx.recyclerview) // This is your com.spotify.android:auth dependency
+    implementation(libs.androidx.recyclerview)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-
-
-    // For making HTTP requests
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // For running network operations in the background
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+    implementation(libs.generativeai)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.browser:browser:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3") // Coroutine scope
-
-    // For displaying the list
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
 }

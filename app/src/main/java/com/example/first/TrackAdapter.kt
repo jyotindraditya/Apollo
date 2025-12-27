@@ -6,9 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-// Simple data class to hold our track information
-data class Track(val name: String, val artist: String)
-
 class TrackAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
     // Describes an item view and its place within the RecyclerView
